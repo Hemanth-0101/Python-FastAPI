@@ -80,25 +80,43 @@ A production-ready REST API built with **FastAPI**, **SQLAlchemy**, and **MySQL*
 
 🔒 = Requires `Authorization: Bearer <token>` header
 
+## Prerequisites
+
+- Python **3.12** (avoid 3.14 — it has compatibility issues with some dependencies)
+- MySQL **8.x**
+- Git
+
 ## Setup
 
 ```bash
-# 1. Install dependencies
+# 1. Clone the repository
+git clone https://github.com/your-username/your-repo-name.git
+cd your-repo-name
+
+# 2. Create and activate a virtual environment
+python3.12 -m venv venv
+source venv/bin/activate        # Linux / macOS
+# venv\Scripts\activate         # Windows
+
+# 3. Install dependencies
 pip install -r requirements.txt
 
-# 2. Create MySQL database
+# 4. Create MySQL database
 mysql -u root -p -e "CREATE DATABASE python_project;"
 
-# 3. Update DB URL in database.py if needed
+# 5. Update DB credentials in database.py if needed
+# Default: mysql+pymysql://root:root@localhost:3306/python_project
 
-# 4. Run the server
+# 6. Run the server
 uvicorn main:app --reload
 ```
 
+The API will be available at **http://127.0.0.1:8000**
+
 ## Interactive Docs
 
-- Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
-- ReDoc: [http://localhost:8000/redoc](http://localhost:8000/redoc)
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
 
 ## Key Design Decisions
 
@@ -107,3 +125,13 @@ uvicorn main:app --reload
 - **Partial updates** — `PUT` endpoints use `exclude_unset=True` so only sent fields are updated
 - **JWT auth** — stateless authentication; token carries user email as subject claim
 - **Input validation** — Pydantic validators enforce positive price, non-negative quantity, unique emails
+
+## Troubleshooting
+
+**MySQL connection error** — Verify MySQL is running and credentials in `database.py` match your local setup.
+
+**bcrypt / passlib warning** — If you see a "password cannot be longer than 72 bytes" error, pin the version and restart the server:
+```bash
+pip install bcrypt==4.0.1 passlib[bcrypt]==1.7.4
+uvicorn main:app --reload
+```
